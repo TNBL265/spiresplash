@@ -1,0 +1,7 @@
+spec:
+  ports:
+    - port: DOWNSTREAM_PORT
+      name: http
+      protocol: TCP
+      targetPort: DOWNSTREAM_PORT
+  type: LoadBalancer

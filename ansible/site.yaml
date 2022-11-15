@@ -1,0 +1,42 @@
+---
+- hosts: all
+  vars_files:
+    - vars/spire.yaml
+
+  tasks:
+    - name: Create ansible user
+      become: true
+      import_role:
+        name: user
+      tags:
+        - user
+
+    - name: Install docker and docke-compose
+      import_role:
+        name: docker
+      tags:
+        - docker
+
+    - name: Install k8s and create kind cluster
+      import_role:
+        name: k8s
+      tags:
+        - k8s
+
+    - name: Deploy pki demo into kind cluster
+      import_role:
+        name: pki
+      tags:
+        - pki
+
+    - name: Deploy SPIRE
+      import_role:
+        name: spire
+      tags:
+        - spire
+
+    - name: Setup Ingress Nginx for Tornjak
+      import_role:
+        name: nginx
+      tags:
+        - nginx

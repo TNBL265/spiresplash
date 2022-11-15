@@ -1,0 +1,43 @@
+---
+- name: Install pre-requisites for k8s in python
+  pip:
+    name:
+      - openshift
+      - pyyaml
+      - kubernetes
+
+- name: Install kompose
+  shell: |
+    curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.0/kompose-linux-amd64 -o kompose; \
+    chmod +x kompose; \
+    mv ./kompose /usr/local/bin/kompose
+
+- name: Download kubectl
+  shell: "curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+- name: Install kubectl
+  shell: "install -o {{ ansible_user }} -g {{ ansible_user }} -m 0755 kubectl /usr/local/bin/kubectl"
+
+- name: Install kind
+  shell: |
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.16.0/kind-linux-amd64; \
+    chmod +x ./kind; \
+    mv ./kind /usr/local/bin/kind
+
+- name: Check kind cluster
+  shell: "kind get clusters"
+  register: result
+
+- name: Create kind cluster with docker local registry at localhost:5001
+  shell: "{{ role_path }}/files/setup-cluster.sh {{ spire_cluster_name }}"
+  when: "result.stdout != spire_cluster_name|string"
+
+- name: Set .kube/config
+  become_user: "{{ ansible_user }}"
+  shell: "kind export kubeconfig --name {{ spire_cluster_name }}"
+
+- name: Change kubeconfig file permission
+  file:
+    path: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

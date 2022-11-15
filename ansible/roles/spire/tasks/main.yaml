@@ -1,0 +1,21 @@
+---
+- name: Configure SPIRE Namespace and Configmap
+  k8s:
+    definition: "{{ lookup('file', '{{ spire_path }}/{{ item }}') | from_yaml }}"
+    state: present
+    apply: true
+  loop: "{{ spire_list }}"
+
+- name: Configure SPIRE Server
+  k8s:
+    definition: "{{ lookup('file', '{{ spire_path }}/server/{{ item }}') | from_yaml }}"
+    state: present
+    apply: true
+  loop: "{{ server_list }}"
+
+- name: Configure and deploy the SPIRE Agent
+  k8s:
+    definition: "{{ lookup('file', '{{ spire_path }}/agent/{{ item }}') | from_yaml }}"
+    state: present
+    apply: true
+  loop: "{{ agent_list }}"

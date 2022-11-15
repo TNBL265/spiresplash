@@ -1,0 +1,70 @@
+---
+- name: Create build directory
+  file:
+    path: /var/tmp/docker/tornjak
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy default.conf
+  copy:
+    src: default.conf
+    dest: /var/tmp/docker/tornjak
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rw,g=r,o=r
+
+- name: Copy Dockerfile
+  copy:
+    src: Dockerfile
+    dest: /var/tmp/docker/tornjak
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rw,g=r,o=r
+
+- name: Build nginx docker image and push to local registry
+  docker_image:
+    name: localhost:5001/tornjak
+    build:
+      path: /var/tmp/docker/tornjak
+    push: true
+    source: build
+
+- name: Convert StepCA private key and certificate into TLS Secret
+  shell: "kubectl create secret tls tornjak-tls --key {{ step_certs }}/tornjak/tornjak.key --cert {{ step_certs }}/tornjak/tornjak.crt -n spire"
+
+#- name: Remove Webhook validation
+#  shell: kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+#  ignore_errors: yes
+
+- name: Configure Tornjak
+  k8s:
+    definition: "{{ lookup('file', '{{ spire_path }}/nginx/{{ item }}') | from_yaml }}"
+    state: present
+    apply: true
+  loop: "{{ nginx_list }}"
+
+- name: Create directory to store k8s yaml
+  file:
+    dest: "{{ k8s_path }}/tornjak"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rwx,g=r,o=r
+    recurse: yes
+
+- name: Download nginx ingress controller manifest to the cluster.
+  get_url:
+    url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+    dest: "{{ k8s_path }}/tornjak/nginx-ingress.yaml"
+    mode: "0664"
+
+- name: Apply nginx ingress controller manifest to the cluster.
+  k8s:
+    src: "{{ k8s_path }}/tornjak/nginx-ingress.yaml"
+    state: present
+
+- name: Add hostname
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 tornjak.com"

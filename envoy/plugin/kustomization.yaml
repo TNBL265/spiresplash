@@ -1,0 +1,9 @@
+configMapGenerator:
+- name: backend-envoy
+  files:
+    - backend/config/envoy.yaml
+- name: frontend-envoy
+  files:
+    - frontend/config/envoy.yaml
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,31 @@
+---
+mongo_dns: mern.kerby3p.mongodb.net
+spire_path: /home/spire/spiresplash/k8s/spire
+step_certs: /home/spire/spiresplash/pki/certs
+docker_pki: /home/spire/spiresplash/pki
+k8s_path: /home/spire/spiresplash/k8s
+envoy_path: /home/spire/spiresplash/envoy
+
+spire_cluster_name: spire
+spire_list:
+  - spire-namespace.yaml
+  - spire-bundle-configmap.yaml
+server_list:
+  - server-account.yaml
+  - server-role.yaml
+  - server-role-binding.yaml
+  - server-cluster-role.yaml
+  - server-cluster-role-binding.yaml
+  - server-configmap.yaml
+  - server-statefulset.yaml
+  - server-service.yaml
+agent_list:
+  - agent-account.yaml
+  - agent-cluster-role.yaml
+  - agent-cluster-role-binding.yaml
+  - agent-configmap.yaml
+  - agent-daemonset.yaml
+nginx_list:
+  - nginx-deployment.yaml
+  - nginx-ingress.yaml
+  - nginx-service.yaml

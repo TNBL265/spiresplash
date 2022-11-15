@@ -1,0 +1,6 @@
+spec:
+  clusterIP: None
+  ports:
+    - port: ENVOY_UPSTREAM_PORT
+      protocol: TCP
+      targetPort: ENVOY_UPSTREAM_PORT
