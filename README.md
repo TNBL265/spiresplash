@@ -12,7 +12,7 @@ mesh network and sidecar driven setup (towards a K8  architecture). Challenge is
 yet secure) translation from existing PKI to SPIFFE or an  alternative to achieve a reasonable identity-based attestation level.
 
 ## Submission:
-- [Demo video](https://drive.google.com/file/d/1hKaoQRDpVi8gBgra6oVC9HnPfGsSNlFM/view?usp=sharing)
+- [Walkthrough video](https://drive.google.com/file/d/1XTopR2UlY3tfxqxzz2Plx3eH55JBVyV6/view?usp=share_link)
 - Overview: we demo a full transition from legacy PKI to mTLS with SPIFFE
   - Stage 0: Microservices in Docker with TLS from a local Certificate Authority [spireplash/pki/README.md](./pki/README.md)
   - Stage 1: Migrating to Kubernetes [spireplash/k8s/README.md](./k8s/README.md)
@@ -27,7 +27,11 @@ yet secure) translation from existing PKI to SPIFFE or an  alternative to achiev
 
 ## Future work:
 - Setup [Kubespray](https://github.com/kubernetes-sigs/kubespray) for multi-clusters deployment
+- Configure [RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
+- SPIFFE use case for [Unix](https://github.com/spiffe/spire/blob/v1.5.1/doc/plugin_agent_workloadattestor_unix.md) and [Docker](https://github.com/spiffe/spire/blob/v1.5.1/doc/plugin_agent_workloadattestor_docker.md) workload attestor
+- Combine Unix, Docker and Kubernetes workload attestors by using a centralized SPIRE Server
 - Use an [UpstreamAuthority plugin](https://spiffe.io/docs/latest/deploying/spire_server/) to integrate with existing PKI infrastructure
+- Manage PKI certificate and key lifecycle
 - [MERN stack](https://www.mongodb.com/languages/mern-stack-tutorial) transition use case
 
 ## Acknowledgment:
